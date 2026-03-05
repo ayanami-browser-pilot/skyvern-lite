@@ -1,4 +1,4 @@
-# skyvern-client
+# skyvern-lite
 
 Lightweight Python SDK for the [Skyvern](https://github.com/Skyvern-AI/skyvern) API. Extracted from the official `skyvern` package to provide a minimal, dependency-light client.
 
@@ -10,9 +10,9 @@ The official `skyvern` PyPI package pulls in a massive dependency tree — OpenA
 - Run AI-powered browser tasks via the API
 - Manage workflows, credentials, and browser profiles
 
-...you don't need any of that. **skyvern-client** gives you the complete Skyvern REST API with only two dependencies: `httpx` and `pydantic`.
+...you don't need any of that. **skyvern-lite** gives you the complete Skyvern REST API with only two dependencies: `httpx` and `pydantic`.
 
-| | `skyvern` (official) | `skyvern-client` |
+| | `skyvern` (official) | `skyvern-lite` |
 |--|---------------------|-----------------|
 | Dependencies | openai, sqlalchemy, alembic, playwright, litellm, ... | **httpx + pydantic** |
 | Install size | Hundreds of MB | A few MB |
@@ -23,14 +23,14 @@ The official `skyvern` PyPI package pulls in a massive dependency tree — OpenA
 ## Install
 
 ```bash
-pip install skyvern-client
+pip install skyvern-lite
 ```
 
 Or install from source:
 
 ```bash
-git clone https://github.com/QLYYLQ/skyvern-client.git
-cd skyvern-client
+git clone https://github.com/QLYYLQ/skyvern-lite.git
+cd skyvern-lite
 pip install -e .
 ```
 

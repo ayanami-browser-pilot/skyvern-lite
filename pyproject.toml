@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "skyvern-client"
+name = "skyvern-lite"
 version = "0.1.0"
 description = "Lightweight Skyvern API client for cloud browser CDP sessions"
 requires-python = ">=3.9"
