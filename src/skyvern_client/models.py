@@ -1,0 +1,162 @@
+"""Data models for cloud browser SDK."""
+
+from __future__ import annotations
+
+from datetime import datetime
+from typing import Any, Callable
+
+from pydantic import BaseModel, Field
+
+
+# ---------------------------------------------------------------------------
+# Status mapping: Skyvern → spec
+# ---------------------------------------------------------------------------
+
+_STATUS_MAP: dict[str, str] = {
+    "created": "active",
+    "running": "active",
+    "completed": "closed",
+    "failed": "error",
+    "timeout": "error",
+}
+
+
+def map_status(skyvern_status: str) -> str:
+    """Map a Skyvern status string to the unified spec status."""
+    return _STATUS_MAP.get(skyvern_status, skyvern_status)
+
+
+# ---------------------------------------------------------------------------
+# Proxy location mapping: ISO country code → Skyvern ProxyLocation enum value
+# ---------------------------------------------------------------------------
+
+COUNTRY_TO_PROXY_LOCATION: dict[str, str] = {
+    "US": "RESIDENTIAL",
+    "DE": "RESIDENTIAL_DE",
+    "IN": "RESIDENTIAL_IN",
+    "JP": "RESIDENTIAL_JP",
+    "AT": "RESIDENTIAL_AT",
+    "AU": "RESIDENTIAL_AU",
+    "BE": "RESIDENTIAL_BE",
+    "BR": "RESIDENTIAL_BR",
+    "BG": "RESIDENTIAL_BG",
+    "CA": "RESIDENTIAL_CA",
+    "CZ": "RESIDENTIAL_CZ",
+    "ES": "RESIDENTIAL_ES",
+    "FI": "RESIDENTIAL_FI",
+    "FR": "RESIDENTIAL_FR",
+    "GR": "RESIDENTIAL_GR",
+    "IL": "RESIDENTIAL_IL",
+    "IT": "RESIDENTIAL_IT",
+    "MX": "RESIDENTIAL_MX",
+    "NL": "RESIDENTIAL_NL",
+    "NO": "RESIDENTIAL_NO",
+    "PL": "RESIDENTIAL_PL",
+    "RO": "RESIDENTIAL_RO",
+    "RU": "RESIDENTIAL_RU",
+    "SE": "RESIDENTIAL_SE",
+    "SK": "RESIDENTIAL_SK",
+    "ZA": "RESIDENTIAL_ZA",
+    "KR": "RESIDENTIAL_KR",
+    "CH": "RESIDENTIAL_CH",
+    "TR": "RESIDENTIAL_TR",
+    "GB": "RESIDENTIAL_GB",
+    "IE": "RESIDENTIAL_IE",
+}
+
+
+# ---------------------------------------------------------------------------
+# Configuration models
+# ---------------------------------------------------------------------------
+
+
+class ManagedProxyConfig(BaseModel):
+    """Managed proxy configuration — provider handles the proxy.
+
+    Maps country code to Skyvern's proxy_location enum.
+    """
+
+    country: str
+    city: str | None = None
+
+
+class ProxyConfig(BaseModel):
+    """Custom proxy configuration (server + credentials).
+
+    Note: Skyvern does not support custom proxies. Using this will raise
+    NotImplementedError at session creation time.
+    """
+
+    server: str
+    username: str | None = None
+    password: str | None = None
+
+
+class RecordingConfig(BaseModel):
+    """Recording configuration."""
+
+    enabled: bool = True
+
+
+class ViewportConfig(BaseModel):
+    """Viewport dimensions."""
+
+    width: int = 1920
+    height: int = 1080
+    device_scale_factor: float = 1.0
+    is_mobile: bool = False
+
+
+class FingerprintConfig(BaseModel):
+    """Browser fingerprint configuration. All fields optional."""
+
+    user_agent: str | None = None
+    viewport: ViewportConfig | None = None
+    locale: str | None = None
+    timezone: str | None = None
+    webgl_vendor: str | None = None
+    webgl_renderer: str | None = None
+    platform: str | None = None
+
+
+class ContextAttach(BaseModel):
+    """Context attachment for session creation."""
+
+    context_id: str
+    mode: str = "read_write"
+
+
+# ---------------------------------------------------------------------------
+# SessionInfo
+# ---------------------------------------------------------------------------
+
+
+class SessionInfo(BaseModel):
+    """Browser session information returned by create/get/list."""
+
+    session_id: str
+    cdp_url: str | None = None
+    status: str = "active"
+    created_at: datetime | None = None
+    inspect_url: str | None = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+    # Internal: deletion callback for context manager support.
+    # Excluded from serialization.
+    _delete_fn: Callable[[], None] | None = None
+
+    model_config = {"arbitrary_types_allowed": True}
+
+    def set_delete_fn(self, fn: Callable[[], None]) -> None:
+        """Attach a deletion callback for context manager support."""
+        object.__setattr__(self, "_delete_fn", fn)
+
+    # --- Context manager protocol ---
+
+    def __enter__(self) -> "SessionInfo":
+        return self
+
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        fn = getattr(self, "_delete_fn", None)
+        if fn is not None:
+            fn()
