@@ -8,6 +8,7 @@ from typing import Any
 from .exceptions import SessionNotFoundError, TimeoutError
 from .models import (
     COUNTRY_TO_PROXY_LOCATION,
+    PROXY_SPECIAL,
     ContextAttach,
     FingerprintConfig,
     ManagedProxyConfig,
@@ -68,20 +69,22 @@ def _build_create_body(
             "Use ManagedProxyConfig(country='US') instead."
         )
     if isinstance(proxy, ManagedProxyConfig):
-        location = COUNTRY_TO_PROXY_LOCATION.get(proxy.country.upper())
+        key = proxy.country.upper()
+        location = COUNTRY_TO_PROXY_LOCATION.get(key) or PROXY_SPECIAL.get(key)
         if location is None:
             raise ValueError(
                 f"Unsupported proxy country: {proxy.country}. "
-                f"Supported: {sorted(COUNTRY_TO_PROXY_LOCATION.keys())}"
+                f"Supported: {sorted(COUNTRY_TO_PROXY_LOCATION.keys())} "
+                f"Special: {sorted(PROXY_SPECIAL.keys())}"
             )
         body["proxy_location"] = location
 
     # Pass-through vendor params
+    # NOTE: timeout is in MINUTES (5–1440), not seconds.
     passthrough_keys = {
         "timeout",
         "extensions",
         "browser_type",
-        "browser_profile_id",
     }
     for key in passthrough_keys:
         if key in vendor_params:

@@ -91,11 +91,8 @@ session = client.sessions.create(
     # Browser type
     browser_type="chrome",   # or "msedge"
 
-    # Timeout
-    timeout=120,             # seconds, default 60
-
-    # Browser profile (must pre-exist)
-    browser_profile_id="bp_...",
+    # Timeout (in MINUTES, range 5–1440, default 60)
+    timeout=120,
 )
 ```
 
@@ -109,6 +106,7 @@ session = client.sessions.create(
 | `created_at` | `datetime \| None` | Creation timestamp |
 | `inspect_url` | `str \| None` | Skyvern dashboard debug URL |
 | `metadata` | `dict` | Vendor-specific data |
+| `metadata["recordings"]` | `list` | Auto-generated session recording URLs (.webm) |
 
 ### CDP WebSocket Authentication
 
@@ -137,13 +135,18 @@ ws = await websockets.connect(
 
 | Feature | Status | Usage |
 |---------|--------|-------|
-| Residential proxy (30+ countries) | Supported | `proxy=ManagedProxyConfig(country="US")` |
+| Residential proxy (20 countries) | Supported | `proxy=ManagedProxyConfig(country="US")` |
+| ISP proxy | Supported | `proxy=ManagedProxyConfig(country="ISP")` |
 | Ad blocker | Supported | `extensions=["ad-blocker"]` |
 | Captcha solver | Supported | `extensions=["captcha-solver"]` |
 | Browser type | Supported | `browser_type="chrome"` or `"msedge"` |
-| Custom timeout | Supported | `timeout=300` |
+| Custom timeout | Supported | `timeout=120` (minutes, 5–1440) |
+| Session recording | Auto | Recordings in `metadata["recordings"]` |
 | Custom proxy server | Not supported | `ProxyConfig()` raises `NotImplementedError` |
 | Browser fingerprint | Not supported | Skyvern API does not accept fingerprint params |
+| Browser profile | Not supported | Requires Skyvern Task/Workflow, not usable via CDP |
+
+Supported proxy countries: US, AR, AU, BR, CA, DE, ES, FR, GB, IE, IN, IT, JP, KR, MX, NL, NZ, PH, TR, ZA.
 
 ### Exceptions
 

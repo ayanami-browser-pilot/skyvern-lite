@@ -31,37 +31,33 @@ def map_status(skyvern_status: str) -> str:
 # ---------------------------------------------------------------------------
 
 COUNTRY_TO_PROXY_LOCATION: dict[str, str] = {
+    # From Skyvern OpenAPI spec (ProxyLocation enum)
     "US": "RESIDENTIAL",
-    "DE": "RESIDENTIAL_DE",
-    "IN": "RESIDENTIAL_IN",
-    "JP": "RESIDENTIAL_JP",
-    "AT": "RESIDENTIAL_AT",
+    "AR": "RESIDENTIAL_AR",
     "AU": "RESIDENTIAL_AU",
-    "BE": "RESIDENTIAL_BE",
     "BR": "RESIDENTIAL_BR",
-    "BG": "RESIDENTIAL_BG",
     "CA": "RESIDENTIAL_CA",
-    "CZ": "RESIDENTIAL_CZ",
+    "DE": "RESIDENTIAL_DE",
     "ES": "RESIDENTIAL_ES",
-    "FI": "RESIDENTIAL_FI",
     "FR": "RESIDENTIAL_FR",
-    "GR": "RESIDENTIAL_GR",
-    "IL": "RESIDENTIAL_IL",
-    "IT": "RESIDENTIAL_IT",
-    "MX": "RESIDENTIAL_MX",
-    "NL": "RESIDENTIAL_NL",
-    "NO": "RESIDENTIAL_NO",
-    "PL": "RESIDENTIAL_PL",
-    "RO": "RESIDENTIAL_RO",
-    "RU": "RESIDENTIAL_RU",
-    "SE": "RESIDENTIAL_SE",
-    "SK": "RESIDENTIAL_SK",
-    "ZA": "RESIDENTIAL_ZA",
-    "KR": "RESIDENTIAL_KR",
-    "CH": "RESIDENTIAL_CH",
-    "TR": "RESIDENTIAL_TR",
     "GB": "RESIDENTIAL_GB",
     "IE": "RESIDENTIAL_IE",
+    "IN": "RESIDENTIAL_IN",
+    "IT": "RESIDENTIAL_IT",
+    "JP": "RESIDENTIAL_JP",
+    "KR": "RESIDENTIAL_KR",
+    "MX": "RESIDENTIAL_MX",
+    "NL": "RESIDENTIAL_NL",
+    "NZ": "RESIDENTIAL_NZ",
+    "PH": "RESIDENTIAL_PH",
+    "TR": "RESIDENTIAL_TR",
+    "ZA": "RESIDENTIAL_ZA",
+}
+
+# Special proxy values (not country-based)
+PROXY_SPECIAL: dict[str, str] = {
+    "ISP": "RESIDENTIAL_ISP",
+    "NONE": "NONE",
 }
 
 

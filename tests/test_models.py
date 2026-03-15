@@ -118,7 +118,7 @@ class TestProxyModels:
         assert COUNTRY_TO_PROXY_LOCATION["GB"] == "RESIDENTIAL_GB"
 
     def test_country_mapping_has_entries(self):
-        assert len(COUNTRY_TO_PROXY_LOCATION) > 20
+        assert len(COUNTRY_TO_PROXY_LOCATION) >= 20
 
 
 class TestConfigModels:
